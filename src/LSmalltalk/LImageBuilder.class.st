@@ -142,33 +142,30 @@ LImageBuilder class >> example4 [
 
 { #category : #examples }
 LImageBuilder class >> example5 [
-	| m2 a2 s s2 r w |
+	| s w |
 	s := self buildFromClassTree.
 	w := LImageWriter new.
 	w memory: s memory.
 	w stream: (WriteStream on: ByteArray new).
 	s imageOutTo: w.
-	w stream contents.
-	m2 := LObjectMemory new.
-	a2 := LStaticAllocator new.
-	a2 memory: m2.
-	a2 allocate: 65536 * 16.
-	r := LImageReader new.
-	r memory: m2.
-	r allocator: a2.
-	r stream: (ReadStream on: w stream contents).
-	s2 := self new.
-	s2 memory: m2.
-	s2 allocator: a2.
-	s2 imageInFrom: r.
-	^ s2
+	^ w stream contents
 ]
 
 { #category : #examples }
 LImageBuilder class >> example6 [
-	| s arr a i io p gc |
-	s := self example5.
-	s env bootMethod.	"139208"
+	| image s arr a i io p gc r |
+	image := self example5.
+	a := LStaticAllocator new.
+	a memory: LObjectMemory new.
+	a allocate: 65536 * 16.
+	r := LImageReader new.
+	r memory: a memory.
+	r allocator: a.
+	r stream: (ReadStream on: image).
+	s := self new.
+	s memory: a memory.
+	s allocator: a.
+	s imageInFrom: r.
 	arr := s createInitialProcess.
 	a := s allocator asDynamicAllocator.
 	gc := LCopyingGC new.
