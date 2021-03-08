@@ -7,7 +7,8 @@ Class {
 		'memory',
 		'globalValues',
 		'allocator',
-		'env'
+		'env',
+		'options'
 	],
 	#category : #'LSmalltalk-Tools'
 }
@@ -23,6 +24,7 @@ LImageBuilder class >> buildFromClassTree [
 	s memory: m1.
 	s allocator: a1.
 	s bigBang.
+	s excludeSources: true.
 	r := LSourceGenerator new.
 	r builder: s.
 	r generateObject: LObject class: LClass.
@@ -273,11 +275,16 @@ LImageBuilder >> class: aString instanceMethod: aString2 [
 	a := memory newSmallInteger: r fifth.
 	memory objectAt: method dataAt: self temporarySizeInMethod put: a.
 	memory objectAt: method dataAt: self classInMethod put: cl.
-	a := self newString: aString2.
+	a := self excludeSources
+		ifTrue: [ 0 ]
+		ifFalse: [ self newString: aString2 ].
 	memory objectAt: method dataAt: self textInMethod put: a.
 	a := self newSymbol: r first.
 	memory objectAt: method dataAt: self nameInMethod put: a.
-	allocator dictionary: (memory methodsOfClassAt: cl) insertAt: a put: method
+	allocator
+		dictionary: (memory methodsOfClassAt: cl)
+		insertAt: a
+		put: method
 ]
 
 { #category : #api }
@@ -358,6 +365,18 @@ LImageBuilder >> env [
 { #category : #accessing }
 LImageBuilder >> env: anObject [
 	env := anObject
+]
+
+{ #category : #api }
+LImageBuilder >> excludeSources [
+	^ options includes: #excludeSources
+]
+
+{ #category : #api }
+LImageBuilder >> excludeSources: aBoolean [
+	aBoolean
+		ifTrue: [ options add: #excludeSources ]
+		ifFalse: [ options remove: #excludeSources ifAbsent: [  ] ]
 ]
 
 { #category : #private }
@@ -467,7 +486,8 @@ LImageBuilder >> imageOutTo: aWriter [
 
 { #category : #initialization }
 LImageBuilder >> initialize [
-	env := LEnvironment new
+	env := LEnvironment new.
+	options := Set new
 ]
 
 { #category : #private }
@@ -631,6 +651,16 @@ LImageBuilder >> objectAt: anInteger classNamed: aString [
 	| cl |
 	cl := env globalNamed: aString.
 	^ memory objectAt: anInteger class: cl
+]
+
+{ #category : #accessing }
+LImageBuilder >> options [
+	^ options
+]
+
+{ #category : #accessing }
+LImageBuilder >> options: anObject [
+	options := anObject
 ]
 
 { #category : #api }

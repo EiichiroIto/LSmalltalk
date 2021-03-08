@@ -571,6 +571,17 @@ LImageBuilderTest >> testObjectAtClassNamed [
 ]
 
 { #category : #test }
+LImageBuilderTest >> testOptions [
+	| b s |
+	b := self newBuilder.
+	self assert: b options class equals: Set.
+	self assert: b options isEmpty.
+	s := Set new.
+	b options: s.
+	self assert: b options identicalTo: s
+]
+
+{ #category : #test }
 LImageBuilderTest >> testSetupMetaClass [
 	| b m c1 c2 e |
 	b := self newBuilder.

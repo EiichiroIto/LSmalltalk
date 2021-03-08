@@ -86,7 +86,7 @@ LCompiler >> clearTemporaries [
 { #category : #api }
 LCompiler >> compile [
 	| n |
-	n := self parserClass parseMethod: self source.
+	n := self parserClass parseMethod: source.
 	self parseArguments: n arguments.
 	self parseTemporaries: n temporaries.
 	(self parseBody: n)
@@ -101,7 +101,7 @@ LCompiler >> compile [
 { #category : #api }
 LCompiler >> compileExpression [
 	| n |
-	n := self parserClass parseExpression: self source.
+	n := self parserClass parseExpression: source.
 	self parseArguments: n arguments.
 	(self parseExpression: n)
 		ifFalse: [ ^ nil ].

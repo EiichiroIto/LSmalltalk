@@ -1,7 +1,7 @@
 Class {
 	#name : #LProtoObject,
 	#superclass : #Object,
-	#category : #'LSmalltalk-Kernel'
+	#category : #'LSmalltalk-Tools'
 }
 
 { #category : #primitives }

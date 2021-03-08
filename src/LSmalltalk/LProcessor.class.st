@@ -1,8 +1,8 @@
 Class {
 	#name : #LProcessor,
 	#superclass : #Object,
-	#traits : 'TLProcessSize + TLMethodSize + TLInstructions + TLNames + TLBlockSize',
-	#classTraits : 'TLProcessSize classTrait + TLMethodSize classTrait + TLInstructions classTrait + TLNames classTrait + TLBlockSize classTrait',
+	#traits : 'TLProcessSize + TLMethodSize + TLInstructions + TLBlockSize',
+	#classTraits : 'TLProcessSize classTrait + TLMethodSize classTrait + TLInstructions classTrait + TLBlockSize classTrait',
 	#instVars : [
 		'memory',
 		'context',

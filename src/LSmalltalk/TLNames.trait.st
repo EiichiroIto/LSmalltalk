@@ -104,11 +104,6 @@ TLNames >> smallIntegerClassName [
 ]
 
 { #category : #constants }
-TLNames >> smalltalkName [
-	^ 'LSmalltalk'
-]
-
-{ #category : #constants }
 TLNames >> startUpMethodName [
 	^ 'boot'
 ]
