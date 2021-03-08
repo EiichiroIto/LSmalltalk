@@ -3,7 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'builder',
-		'specials'
+		'specials',
+		'classClassName'
 	],
 	#category : #'LSmalltalk-Tools'
 }
@@ -32,6 +33,16 @@ LSourceGenerator >> builder [
 { #category : #accessing }
 LSourceGenerator >> builder: anObject [
 	builder := anObject
+]
+
+{ #category : #accessing }
+LSourceGenerator >> classClassName [
+	^ classClassName
+]
+
+{ #category : #accessing }
+LSourceGenerator >> classClassName: anObject [
+	classClassName := anObject
 ]
 
 { #category : #api }
@@ -64,7 +75,7 @@ LSourceGenerator >> generateClass: aClass metaClass: aMetaClass [
 	metaName := builder metaName , aClass name.
 	builder
 		class: metaName
-		isInstanceOf: builder classClassName
+		isInstanceOf: classClassName
 		andSubClassOf: builder metaName , aClass superclass name
 		withVariables: aMetaClass instVarNames.
 	builder
@@ -98,6 +109,7 @@ LSourceGenerator >> generateMethodsInClass: aClass [
 LSourceGenerator >> generateObject: aClass class: aClass2 [
 	specials add: aClass.
 	specials add: aClass2.
+	classClassName := aClass2 name.
 	builder
 		class: aClass2 name
 		isInstanceOf: builder metaName , aClass2 name

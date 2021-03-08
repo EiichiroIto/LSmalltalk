@@ -35,7 +35,7 @@ LStaticAllocator >> staticAlloc: anInteger [
 { #category : #api }
 LStaticAllocator >> staticIAlloc: anInteger [
 	| trueSize obj |
-	trueSize := (anInteger + memory bytesPerWord - 1) // memory bytesPerWord.
+	trueSize := memory trueSizeOf: anInteger.
 	obj := self staticAlloc: trueSize.
 	memory objectAt: obj size: anInteger.
 	memory markBinaryObjectAt: obj.

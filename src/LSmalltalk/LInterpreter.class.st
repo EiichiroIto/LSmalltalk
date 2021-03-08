@@ -17,35 +17,11 @@ Class {
 		'specialDispatchTable',
 		'ticks',
 		'exitBlock',
-		'logger'
+		'logger',
+		'classNames'
 	],
 	#category : #'LSmalltalk-Core'
 }
-
-{ #category : #examples }
-LInterpreter class >> example1 [
-	| s a arr i io p |
-	Transcript clear.
-	s := LImageBuilder example2.
-	s env bootMethod.	"139208"
-	arr := s createInitialProcess.
-	a := s allocator asDynamicAllocator.
-	io := LIOSystem new.
-	i := LInterpreter new.
-	i allocator: a.
-	i memory: s memory.
-	i env: s env.
-	i ioSystem: io.
-	p := i createInitialContextFrom: arr.
-	i startProcess: p.
-	29 timesRepeat: [ i doOneCycle ].
-	51 * 257 timesRepeat: [ i doOneCycle ].
-	282 timesRepeat: [ i doOneCycle ].
-	i gc.
-	i pc.
-	i doOneCycle.
-	^ i
-]
 
 { #category : #accessing }
 LInterpreter >> allocator [
@@ -318,13 +294,13 @@ LInterpreter >> checkCache: anInteger [
 	pc putStackTopOfContext.
 	pc putBytePointerOfContext.
 	obj := allocator gcAlloc: self contextSize.
-	self objectAt: obj classNamed: self contextClassName.
+	self objectAt: obj classNamed: classNames contextClassName.
 	pc context: obj.
 	pc temporaries: allocator popRoot.
 	pc putTemporariesOfContext.
 	pc stack: allocator popRoot.
 	pc putStackOfContext.
-	self objectAt: pc stack classNamed: self arrayClassName.
+	self objectAt: pc stack classNamed: classNames arrayClassName.
 	pc clearStackTopOfContext.
 	pc clearStackTop.
 	memory
@@ -388,10 +364,20 @@ LInterpreter >> checkTicks [
 	self exit: self returnTimeExpired process: process
 ]
 
+{ #category : #accessing }
+LInterpreter >> classNames [
+	^ classNames
+]
+
+{ #category : #accessing }
+LInterpreter >> classNames: anObject [
+	classNames := anObject
+]
+
 { #category : #private }
 LInterpreter >> classOf: anInteger [
 	(memory isSmallInteger: anInteger)
-		ifTrue: [ ^ env globalNamed: self smallIntegerClassName ].
+		ifTrue: [ ^ env globalNamed: classNames smallIntegerClassName ].
 	^ memory classOfObjectAt: anInteger
 ]
 
@@ -407,7 +393,7 @@ LInterpreter >> createInitialContextFrom: anArray [
 	initialStack := anArray second.
 	initialTempraries := anArray third.
 	obj := allocator gcAlloc: self contextSize.
-	self objectAt: obj classNamed: self contextClassName.
+	self objectAt: obj classNamed: classNames contextClassName.
 	memory objectAt: process dataAt: self contextInProcess put: obj.
 	memory objectAt: obj dataAt: self stackInContext put: initialStack.
 	memory objectAt: obj dataAt: self argumentsInContext put: env nilObject.
@@ -902,7 +888,7 @@ LInterpreter >> markArguments: anInteger [
 	self info: anInteger asString.
 	allocator pushRoot: pc context.
 	obj := allocator gcAlloc: anInteger.
-	self objectAt: obj classNamed: self arrayClassName.
+	self objectAt: obj classNamed: classNames arrayClassName.
 	pc arguments: obj.
 	tmp := allocator popRoot.
 	pc context ~= tmp
@@ -957,7 +943,7 @@ LInterpreter >> newArguments [
 LInterpreter >> newArray: anInteger [
 	| obj |
 	obj := allocator gcAlloc: anInteger.
-	self objectAt: obj classNamed: self arrayClassName.
+	self objectAt: obj classNamed: classNames arrayClassName.
 	memory clearObjectAt: obj.
 	^ obj
 ]
@@ -1067,11 +1053,11 @@ LInterpreter >> pushBlock: anInteger [
 	high := pc fetchUint16.
 	allocator pushRoot: pc context.
 	op := allocator gcAlloc: pc stackSizeOfMethod.
-	self objectAt: op classNamed: self arrayClassName.
+	self objectAt: op classNamed: classNames arrayClassName.
 	allocator pushRoot: op.
 	memory clearObjectAt: op.
 	returnedValue := allocator gcAlloc: self blockSize.
-	self objectAt: returnedValue classNamed: self blockClassName.
+	self objectAt: returnedValue classNamed: classNames blockClassName.
 	memory objectAt: returnedValue dataAt: self bytePointerInContext put: 0.
 	memory objectAt: returnedValue dataAt: self stackTopInBlock put: 0.
 	memory objectAt: returnedValue dataAt: self previousContextInBlock put: 0.
@@ -1081,7 +1067,7 @@ LInterpreter >> pushBlock: anInteger [
 	memory objectAt: returnedValue dataAt: self argumentLocationInBlock put: obj.
 	memory objectAt: returnedValue dataAt: self stackInBlock put: allocator popRoot.
 	pc context: allocator popRoot.
-	obj := (self classOfObjectAt: pc context isNamed: self blockClassName)
+	obj := (self classOfObjectAt: pc context isNamed: classNames blockClassName)
 		ifTrue: [ pc putCreatingContextOfBlock ]
 		ifFalse: [ pc context ].
 	memory objectAt: returnedValue dataAt: self creatingContextInBlock put: obj.
@@ -1200,7 +1186,7 @@ LInterpreter >> sendBinary: anInteger [
 			^ pc pushStack: returnedValue ].
 	allocator pushRoot: pc context.
 	obj := allocator gcAlloc: 2.
-	self objectAt: obj classNamed: self arrayClassName.
+	self objectAt: obj classNamed: classNames arrayClassName.
 	pc arguments: obj.
 	tmp := allocator popRoot.
 	pc context = tmp

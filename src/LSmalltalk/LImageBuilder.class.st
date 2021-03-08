@@ -8,7 +8,8 @@ Class {
 		'globalValues',
 		'allocator',
 		'env',
-		'options'
+		'options',
+		'classNames'
 	],
 	#category : #'LSmalltalk-Tools'
 }
@@ -19,8 +20,9 @@ LImageBuilder class >> buildFromClassTree [
 	m1 := LObjectMemory new.
 	a1 := LBuildingAllocator new.
 	a1 memory: m1.
-	a1 allocate: 65536 * 4.
+	a1 allocateMemory: 65536 * 4.
 	s := self new.
+	s classNames: LClassNames new.
 	s memory: m1.
 	s allocator: a1.
 	s bigBang.
@@ -41,8 +43,9 @@ LImageBuilder class >> buildFromImageSource [
 	m1 := LObjectMemory new.
 	a1 := LBuildingAllocator new.
 	a1 memory: m1.
-	a1 allocate: 65536 * 4.
+	a1 allocateMemory: 65536 * 4.
 	s := self new.
+	s classNames: LClassNames new.
 	s memory: m1.
 	s allocator: a1.
 	s bigBang.
@@ -72,12 +75,13 @@ LImageBuilder class >> example2 [
 	m2 := LObjectMemory new.
 	a2 := LStaticAllocator new.
 	a2 memory: m2.
-	a2 allocate: 65536 * 16.
+	a2 allocateMemory: 65536 * 16.
 	r := LImageReader new.
 	r memory: m2.
 	r allocator: a2.
 	r stream: (ReadStream on: w stream contents).
 	s2 := self new.
+	s2 classNames: s classNames.
 	s2 memory: m2.
 	s2 allocator: a2.
 	s2 imageInFrom: r.
@@ -91,8 +95,14 @@ LImageBuilder class >> example3 [
 	s env bootMethod.	"139208"
 	arr := s createInitialProcess.
 	a := s allocator asDynamicAllocator.
+	a
+		gc:
+			(LGarbageCollector new
+				allocator: a;
+				yourself).
 	io := LIOSystem new.
 	i := LInterpreter new.
+	i classNames: s classNames.
 	i allocator: a.
 	i memory: s memory.
 	i env: s env.
@@ -131,6 +141,7 @@ LImageBuilder class >> example4 [
 	gc setupSpaces.
 	io := LIOSystem new.
 	i := LInterpreter new.
+	i classNames: s classNames.
 	i inspect.
 	i allocator: a.
 	i memory: s memory.
@@ -159,12 +170,13 @@ LImageBuilder class >> example6 [
 	image := self example5.
 	a := LStaticAllocator new.
 	a memory: LObjectMemory new.
-	a allocate: 65536 * 16.
+	a allocateMemory: 65536 * 16.
 	r := LImageReader new.
 	r memory: a memory.
 	r allocator: a.
 	r stream: (ReadStream on: image).
 	s := self new.
+	s classNames: LClassNames new.
 	s memory: a memory.
 	s allocator: a.
 	s imageInFrom: r.
@@ -176,6 +188,7 @@ LImageBuilder class >> example6 [
 	gc setupSpaces.
 	io := LIOSystem new.
 	i := LInterpreter new.
+	i classNames: LClassNames new.
 	i inspect.
 	i allocator: a.
 	i memory: s memory.
@@ -308,7 +321,7 @@ LImageBuilder >> class: aString isInstanceOf: aString2 andSubClassOf: aString3 w
 LImageBuilder >> class: aString superClass: aString2 variables: anArray [
 	self
 		class: self metaName , aString
-		isInstanceOf: self classClassName
+		isInstanceOf: classNames classClassName
 		andSubClassOf: self metaName , aString2
 		withVariables: #().
 	self
@@ -316,6 +329,16 @@ LImageBuilder >> class: aString superClass: aString2 variables: anArray [
 		isInstanceOf: self metaName , aString
 		andSubClassOf: aString2
 		withVariables: anArray
+]
+
+{ #category : #accessing }
+LImageBuilder >> classNames [
+	^ classNames
+]
+
+{ #category : #accessing }
+LImageBuilder >> classNames: anObject [
+	classNames := anObject
 ]
 
 { #category : #private }
@@ -382,10 +405,10 @@ LImageBuilder >> excludeSources: aBoolean [
 { #category : #private }
 LImageBuilder >> finalizeBigBang [
 	| objectClass classClass |
-	objectClass := env globalNamed: self objectClassName.
+	objectClass := env globalNamed: classNames objectClassName.
 	memory classAt: objectClass methods: self newDictionary.
 	memory classAt: objectClass instanceSize: 0.
-	classClass := env globalNamed: self classClassName.
+	classClass := env globalNamed: classNames classClassName.
 	memory classAt: classClass instanceSize: 0.
 	globalValues := self gcAlloc: 2.
 	env addGlobal: globalValues named: self globalsObjectName
@@ -395,7 +418,7 @@ LImageBuilder >> finalizeBigBang [
 LImageBuilder >> fixGlobales [
 	| t v o |
 	t := globalValues.
-	self objectAt: t classNamed: self dictionaryClassName.
+	self objectAt: t classNamed: classNames dictionaryClassName.
 	memory
 		objectAt: t
 		dataAt: memory keysInDictionary
@@ -454,11 +477,11 @@ LImageBuilder >> imageInFrom: aReader [
 	env falseObject: aReader objectRead.
 	env addGlobal: env falseObject named: self falseObjectName.
 	globalValues := aReader objectRead.
-	env addGlobal: aReader objectRead named: self smallIntegerClassName.
-	env addGlobal: aReader objectRead named: self integerClassName.
-	env addGlobal: aReader objectRead named: self arrayClassName.
-	env addGlobal: aReader objectRead named: self blockClassName.
-	env addGlobal: aReader objectRead named: self contextClassName.
+	env addGlobal: aReader objectRead named: classNames smallIntegerClassName.
+	env addGlobal: aReader objectRead named: classNames integerClassName.
+	env addGlobal: aReader objectRead named: classNames arrayClassName.
+	env addGlobal: aReader objectRead named: classNames blockClassName.
+	env addGlobal: aReader objectRead named: classNames contextClassName.
 	env bootMethod: aReader objectRead.
 	env addSymbol: aReader objectRead named: #<.
 	env addSymbol: aReader objectRead named: #<=.
@@ -472,11 +495,11 @@ LImageBuilder >> imageOutTo: aWriter [
 	aWriter imageOut: (env globalNamed: self trueObjectName).
 	aWriter imageOut: (env globalNamed: self falseObjectName).
 	aWriter imageOut: globalValues.
-	aWriter imageOut: (env globalNamed: self smallIntegerClassName).
-	aWriter imageOut: (env globalNamed: self integerClassName).
-	aWriter imageOut: (env globalNamed: self arrayClassName).
-	aWriter imageOut: (env globalNamed: self blockClassName).
-	aWriter imageOut: (env globalNamed: self contextClassName).
+	aWriter imageOut: (env globalNamed: classNames smallIntegerClassName).
+	aWriter imageOut: (env globalNamed: classNames integerClassName).
+	aWriter imageOut: (env globalNamed: classNames arrayClassName).
+	aWriter imageOut: (env globalNamed: classNames blockClassName).
+	aWriter imageOut: (env globalNamed: classNames contextClassName).
 	aWriter imageOut: env bootMethod.
 	aWriter imageOut: (self newSymbol: #<).
 	aWriter imageOut: (self newSymbol: #<=).
@@ -515,7 +538,7 @@ LImageBuilder >> memory: anObject [
 LImageBuilder >> newArray: anInteger [
 	| obj |
 	obj := self gcAlloc: anInteger.
-	self objectAt: obj classNamed: self arrayClassName.
+	self objectAt: obj classNamed: classNames arrayClassName.
 	1 to: anInteger do:
 		[ :each | memory objectAt: obj dataAt: each - 1 put: env nilObject ].
 	^ obj
@@ -525,7 +548,7 @@ LImageBuilder >> newArray: anInteger [
 LImageBuilder >> newByteArray: anArray [
 	| obj |
 	obj := allocator newByteArray: anArray.
-	self objectAt: obj classNamed: self byteArrayClassName.
+	self objectAt: obj classNamed: classNames byteArrayClassName.
 	^ obj
 ]
 
@@ -533,7 +556,7 @@ LImageBuilder >> newByteArray: anArray [
 LImageBuilder >> newCharacter: aCharacter [
 	| obj |
 	obj := self gcAlloc: 1.
-	self objectAt: obj classNamed: self characterClassName.
+	self objectAt: obj classNamed: classNames characterClassName.
 	memory objectAt: obj dataAt: 0 put: (memory newSmallInteger: aCharacter asciiValue).
 	^ obj
 ]
@@ -549,7 +572,7 @@ LImageBuilder >> newClassNamed: aString adding: anInteger [
 LImageBuilder >> newDictionary [
 	| obj |
 	obj := self gcAlloc: 2.
-	self objectAt: obj classNamed: self dictionaryClassName.
+	self objectAt: obj classNamed: classNames dictionaryClassName.
 	memory
 		objectAt: obj
 		dataAt: memory keysInDictionary
@@ -582,7 +605,7 @@ LImageBuilder >> newLiteralArray: anArray [
 	anArray isEmpty
 		ifTrue: [ ^ env nilObject ].
 	obj := self gcAlloc: anArray size.
-	self objectAt: obj classNamed: self arrayClassName.
+	self objectAt: obj classNamed: classNames arrayClassName.
 	anArray
 		withIndexDo:
 			[ :each :index | memory objectAt: obj dataAt: index - 1 put: (self newLiteral: each) ].
@@ -593,7 +616,7 @@ LImageBuilder >> newLiteralArray: anArray [
 LImageBuilder >> newMethod [
 	| obj |
 	obj := self gcAlloc: self methodSize.
-	self objectAt: obj classNamed: self methodClassName.
+	self objectAt: obj classNamed: classNames methodClassName.
 	^ obj
 ]
 
@@ -601,7 +624,7 @@ LImageBuilder >> newMethod [
 LImageBuilder >> newNode: v left: l right: r [
 	| obj |
 	obj := self gcAlloc: 3.
-	self objectAt: obj classNamed: self nodeClassName.
+	self objectAt: obj classNamed: classNames nodeClassName.
 	memory objectAt: obj dataAt: memory valueInNode put: v.
 	memory objectAt: obj dataAt: memory leftInNode put: l.
 	memory objectAt: obj dataAt: memory rightInNode put: r.
@@ -612,7 +635,7 @@ LImageBuilder >> newNode: v left: l right: r [
 LImageBuilder >> newOrderedArray [
 	| obj |
 	obj := self gcAlloc: 0.
-	self objectAt: obj classNamed: self orderedArrayClassName.
+	self objectAt: obj classNamed: classNames orderedArrayClassName.
 	^ obj
 ]
 
@@ -620,7 +643,7 @@ LImageBuilder >> newOrderedArray [
 LImageBuilder >> newString: aString [
 	| obj |
 	obj := allocator newString: aString.
-	self objectAt: obj classNamed: self stringClassName.
+	self objectAt: obj classNamed: classNames stringClassName.
 	^ obj
 ]
 
@@ -631,7 +654,7 @@ LImageBuilder >> newSymbol: aString [
 		ifTrue: [ ^ env symbolNamed: aString ].
 	addr := allocator newString: aString.
 	cl := env
-		globalNamed: self symbolClassName
+		globalNamed: classNames symbolClassName
 		ifAbsent: [ env nilObject ].
 	memory objectAt: addr class: cl.
 	env addSymbol: addr named: aString.
@@ -642,7 +665,7 @@ LImageBuilder >> newSymbol: aString [
 LImageBuilder >> newTree [
 	| obj |
 	obj := self gcAlloc: 1.
-	self objectAt: obj classNamed: self treeClassName.
+	self objectAt: obj classNamed: classNames treeClassName.
 	^ obj
 ]
 
@@ -666,55 +689,55 @@ LImageBuilder >> options: anObject [
 { #category : #api }
 LImageBuilder >> setup2 [
 	self
-		class: self classClassName
-		isInstanceOf: self metaClassClassName
-		andSubClassOf: self objectClassName
+		class: classNames classClassName
+		isInstanceOf: classNames metaClassClassName
+		andSubClassOf: classNames objectClassName
 		withVariables: #(name parentClass methods size variables).
 	self
-		class: self metaObjectClassName
-		isInstanceOf: self classClassName
-		andSubClassOf: self classClassName
+		class: classNames metaObjectClassName
+		isInstanceOf: classNames classClassName
+		andSubClassOf: classNames classClassName
 		withVariables: #().
 	self
-		class: self metaClassClassName
-		isInstanceOf: self classClassName
-		andSubClassOf: self metaObjectClassName
+		class: classNames metaClassClassName
+		isInstanceOf: classNames classClassName
+		andSubClassOf: classNames metaObjectClassName
 		withVariables: #().
 	self
-		class: self methodClassName
-		superClass: self objectClassName
+		class: classNames methodClassName
+		superClass: classNames objectClassName
 		variables: #(name byteCodes literals stackSize temporarySize class text)
 ]
 
 { #category : #private }
 LImageBuilder >> setupMetaClass [
 	| classClass metaClassClass |
-	classClass := self addClassNamed: self classClassName.
-	metaClassClass := self addClassNamed: self metaClassClassName.
+	classClass := self addClassNamed: classNames classClassName.
+	metaClassClass := self addClassNamed: classNames metaClassClassName.
 	memory objectAt: classClass class: metaClassClass
 ]
 
 { #category : #private }
 LImageBuilder >> setupMiscClasses [
 	| trueClass falseClass trueObject falseObject |
-	self addClassNamed: self blockClassName.
-	self addClassNamed: self characterClassName adding: 1.
-	self addClassNamed: self smallIntegerClassName adding: 1.
-	self addClassNamed: self integerClassName.
-	trueClass := self addClassNamed: self trueClassName.
+	self addClassNamed: classNames blockClassName.
+	self addClassNamed: classNames characterClassName adding: 1.
+	self addClassNamed: classNames smallIntegerClassName adding: 1.
+	self addClassNamed: classNames integerClassName.
+	trueClass := self addClassNamed: classNames trueClassName.
 	trueObject := self gcAlloc: 0.
 	memory objectAt: trueObject class: trueClass.
 	env addGlobal: trueObject named: self trueObjectName.
-	falseClass := self addClassNamed: self falseClassName.
+	falseClass := self addClassNamed: classNames falseClassName.
 	falseObject := self gcAlloc: 0.
 	memory objectAt: falseObject class: falseClass.
 	env addGlobal: falseObject named: self falseObjectName.
-	self addClassNamed: self arrayClassName.
-	self addClassNamed: self byteArrayClassName.
-	self addClassNamed: self orderedArrayClassName.
-	self addClassNamed: self stringClassName.
-	self addClassNamed: self treeClassName.
-	self addClassNamed: self dictionaryClassName
+	self addClassNamed: classNames arrayClassName.
+	self addClassNamed: classNames byteArrayClassName.
+	self addClassNamed: classNames orderedArrayClassName.
+	self addClassNamed: classNames stringClassName.
+	self addClassNamed: classNames treeClassName.
+	self addClassNamed: classNames dictionaryClassName
 ]
 
 { #category : #private }
@@ -722,10 +745,10 @@ LImageBuilder >> setupNilObject [
 	| symbolClass undefinedClass s |
 	env nilObject: (self gcAlloc: 0).
 	symbolClass := self gcAlloc: memory classSize + 1.
-	env addGlobal: symbolClass named: self symbolClassName.
-	s := self newSymbol: self symbolClassName.
+	env addGlobal: symbolClass named: classNames symbolClassName.
+	s := self newSymbol: classNames symbolClassName.
 	memory classAt: symbolClass name: s.
-	undefinedClass := self addClassNamed: self undefinedClassName.
+	undefinedClass := self addClassNamed: classNames undefinedClassName.
 	memory objectAt: env nilObject class: undefinedClass.
 	env addGlobal: env nilObject named: 'nil'
 ]
@@ -733,8 +756,8 @@ LImageBuilder >> setupNilObject [
 { #category : #private }
 LImageBuilder >> setupObjectClass [
 	| objectClass metaObjectClass |
-	objectClass := self addClassNamed: self objectClassName.
-	metaObjectClass := self addClassNamed: self metaObjectClassName.
+	objectClass := self addClassNamed: classNames objectClassName.
+	metaObjectClass := self addClassNamed: classNames metaObjectClassName.
 	memory objectAt: objectClass class: metaObjectClass.
 	memory classAt: objectClass parentClass: env nilObject
 ]
@@ -743,7 +766,7 @@ LImageBuilder >> setupObjectClass [
 LImageBuilder >> setupSymbolsAndGlobals [
 	| v cl |
 	v := self fixSymbols.
-	cl := env globalNamed: self symbolClassName.
+	cl := env globalNamed: classNames symbolClassName.
 	memory objectAt: cl dataAt: memory symbolsInSymbol put: v.
 	self fixGlobales.
 	self checkGlobals

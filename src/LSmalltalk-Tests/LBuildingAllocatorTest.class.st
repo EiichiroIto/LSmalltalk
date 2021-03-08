@@ -23,7 +23,7 @@ LBuildingAllocatorTest >> testDictionaryInsertAtPut [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	dict := a gcAlloc: 2.
 	m objectAt: dict class: 91.
 	keys := a gcAlloc: 0.
@@ -77,7 +77,7 @@ LBuildingAllocatorTest >> testGcAlloc [
 	a := self newAllocator
 		memory: m;
 		yourself.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	self assert: a free equals: 1.
 	addr := a gcAlloc: 5.
 	self assert: addr equals: 0.
@@ -95,7 +95,7 @@ LBuildingAllocatorTest >> testInsertedArrayAtPut [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	b := a gcAlloc: 4.
 	m objectAt: b dataAt: 0 put: 9.
 	m objectAt: b dataAt: 1 put: 8.
@@ -116,7 +116,7 @@ LBuildingAllocatorTest >> testNewByteArray [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	b := a newByteArray: #[33 44 55 66 77].
 	self
 		assertCollection: (m byteArrayOfObjectAt: b)
@@ -129,7 +129,7 @@ LBuildingAllocatorTest >> testNewClassAdding [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	b := a newClass: 1 adding: 2.
 	self assert: (m nameOfClassAt: b) equals: 1.
 	self assert: (m sizeOfObjectAt: b) equals: m classSize + 2
@@ -141,7 +141,7 @@ LBuildingAllocatorTest >> testNewString [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	s1 := a newString: 'abc'.
 	s2 := a newString: 'defg'.
 	self assert: (m stringOfObjectAt: s1) equals: 'abc'.

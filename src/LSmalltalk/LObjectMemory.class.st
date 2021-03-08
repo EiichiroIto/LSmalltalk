@@ -182,11 +182,6 @@ LObjectMemory >> coreSize [
 	^ core size
 ]
 
-{ #category : #constants }
-LObjectMemory >> defaultCoreSize [
-	^ 2048
-]
-
 { #category : #testing }
 LObjectMemory >> fitsSmallInteger: anInteger [
 	^ anInteger between: -16r40000000 and: 16r3FFFFFFF

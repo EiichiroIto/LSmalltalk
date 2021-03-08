@@ -8,14 +8,14 @@ Class {
 }
 
 { #category : #api }
-LMemoryAllocator >> allocate: anInteger [
+LMemoryAllocator >> allocateMemory: anInteger [
 	memory initialAllocate: anInteger
 ]
 
 { #category : #private }
 LMemoryAllocator >> binaryAlloc: anInteger [
 	| osize addr |
-	osize := (anInteger + memory bytesPerWord - 1) // memory bytesPerWord.
+	osize := memory trueSizeOf: anInteger.
 	addr := self gcAlloc: osize.
 	memory objectAt: addr size: anInteger.
 	memory markBinaryObjectAt: addr.

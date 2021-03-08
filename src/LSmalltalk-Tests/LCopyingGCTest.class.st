@@ -26,7 +26,7 @@ LCopyingGCTest >> testMove [
 	gc := self newGC.
 	a := self newAllocator.
 	m := a memory.
-	a allocate: 100.
+	a allocateMemory: 100.
 	a dynamicStart: 1.
 	a memoryPointer: 5.
 	a gc: gc.
@@ -81,7 +81,7 @@ LCopyingGCTest >> testOldEnd [
 LCopyingGCTest >> testSetupSpaces [
 	| gc a |
 	a := self newAllocator.
-	a allocate: 1000.
+	a allocateMemory: 1000.
 	a dynamicStart: 101.
 	gc := self newGC.
 	gc allocator: a.
@@ -92,7 +92,7 @@ LCopyingGCTest >> testSetupSpaces [
 	self assert: a memoryBase equals: 101.
 	self assert: a memoryEnd equals: 548.
 	a := self newAllocator.
-	a allocate: 1000.
+	a allocateMemory: 1000.
 	a dynamicStart: 109.
 	gc allocator: a.
 	gc setupSpaces.
@@ -134,7 +134,7 @@ LCopyingGCTest >> testSpaceTwo [
 LCopyingGCTest >> testToggleSpace [
 	| a gc |
 	a := self newAllocator.
-	a allocate: 1000.
+	a allocateMemory: 1000.
 	a dynamicStart: 101.
 	gc := self newGC.
 	gc allocator: a.

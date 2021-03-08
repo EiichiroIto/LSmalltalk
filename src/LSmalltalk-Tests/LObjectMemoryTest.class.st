@@ -23,7 +23,7 @@ LObjectMemoryTest >> testAddressOfObjectAtDataAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	r := a gcAlloc: 10.
 	self assert: (m addressOfObjectAt: r dataAt: 0) equals: r + 8.
 	self assert: (m addressOfObjectAt: r dataAt: 1) equals: r + 12.
@@ -64,7 +64,7 @@ LObjectMemoryTest >> testByteAddressOfObjectAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	r := a binaryAlloc: 10.
 	self assert: (m byteAddressOfObjectAt: r) equals: r + 8.
 	r := a binaryAlloc: 20.
@@ -79,7 +79,7 @@ LObjectMemoryTest >> testByteArrayOfObjectAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	arr := #[99 98 97 96].
 	addr := a binaryAlloc: arr size.
 	m objectAt: addr byteArray: arr.
@@ -109,7 +109,7 @@ LObjectMemoryTest >> testClassAtInstanceSize [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	s := a newString: 'abc'.
 	cl := a newClass: s adding: 0.
 	m classAt: cl instanceSize: 5.
@@ -124,7 +124,7 @@ LObjectMemoryTest >> testClassAtMethods [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	s := a newString: 'abc'.
 	cl := a newClass: s adding: 0.
 	m classAt: cl methods: 5.
@@ -137,7 +137,7 @@ LObjectMemoryTest >> testClassAtName [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	s := a newString: 'abc'.
 	cl := a newClass: s adding: 0.
 	m classAt: cl name: 5.
@@ -150,7 +150,7 @@ LObjectMemoryTest >> testClassAtParentClass [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	s := a newString: 'abc'.
 	cl := a newClass: s adding: 0.
 	m classAt: cl parentClass: 5.
@@ -163,7 +163,7 @@ LObjectMemoryTest >> testClassAtVariables [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	s := a newString: 'abc'.
 	cl := a newClass: s adding: 0.
 	m classAt: cl variables: 5.
@@ -176,7 +176,7 @@ LObjectMemoryTest >> testClassOfObjectAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	m objectAt: 123 class: 34567.
 	self assert: (m classOfObjectAt: 123) equals: 34567
 ]
@@ -194,7 +194,7 @@ LObjectMemoryTest >> testClearObjectAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	r := a gcAlloc: 10.
 	0 to: 10 do: [ :each | m objectAt: r dataAt: each put: 10 atRandom + 1 ].
 	0 to: 10 do: [ :each | self assert: (m objectAt: r dataAt: each) ~= 0 ].
@@ -209,7 +209,7 @@ LObjectMemoryTest >> testCompareStringWith [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	m objectAt: 10 string: 'abc'.
 	m objectAt: 10 size: 3.
 	m objectAt: 30 string: 'def'.
@@ -235,7 +235,7 @@ LObjectMemoryTest >> testCopyBinaryDataObjectAtTo [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 100.
+	a allocateMemory: 100.
 	d1 := a binaryAlloc: 5.
 	m objectAt: d1 string: 'abcde'.
 	d2 := a binaryAlloc: 5.
@@ -250,7 +250,7 @@ LObjectMemoryTest >> testCopyDataObjectAtTo [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 100.
+	a allocateMemory: 100.
 	d1 := a gcAlloc: 3.
 	m objectAt: d1 dataAt: 0 put: 10.
 	m objectAt: d1 dataAt: 1 put: 20.
@@ -272,7 +272,7 @@ LObjectMemoryTest >> testCore [
 	self assert: m core isNil.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	self assert: (m core isKindOf: ByteArray).
 	self assert: m core notEmpty
 ]
@@ -283,7 +283,7 @@ LObjectMemoryTest >> testCoreAtBitOr [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	m coreAt: 1 uint8: 5.
 	m coreAt: 4 uint8: 10.
 	self assert: (m core byteAt: 1) equals: 5.
@@ -306,7 +306,7 @@ LObjectMemoryTest >> testCoreAtUint32 [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	m coreAt: 1 uint32: 258.
 	self assert: (m core byteAt: 1) equals: 2.
 	self assert: (m core byteAt: 2) equals: 1.
@@ -322,7 +322,7 @@ LObjectMemoryTest >> testCoreAtUint8 [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	m coreAt: 1 uint8: 258.
 	m coreAt: 4 uint8: 10.
 	self assert: (m core byteAt: 1) equals: 2.
@@ -339,17 +339,10 @@ LObjectMemoryTest >> testCoreSize [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 10.
+	a allocateMemory: 10.
 	self assert: m coreSize equals: 10.
-	a allocate: 20.
+	a allocateMemory: 20.
 	self assert: m coreSize equals: 20
-]
-
-{ #category : #test }
-LObjectMemoryTest >> testDefaultCoreSize [
-	| m |
-	m := self newMemory.
-	self assert: m defaultCoreSize equals: 2048
 ]
 
 { #category : #test }
@@ -369,7 +362,7 @@ LObjectMemoryTest >> testGcDoneAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1000.
+	a allocateMemory: 1000.
 	self deny: (m gcDoneAt: 0).
 	m markGcDoneObjectAt: 0.
 	self assert: (m gcDoneAt: 0)
@@ -388,7 +381,7 @@ LObjectMemoryTest >> testInitialAllocate [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	self assert: m core size equals: 1024.
 	m initialAllocate: 500.
 	self assert: m core size equals: 500
@@ -407,7 +400,7 @@ LObjectMemoryTest >> testInstanceSizeOfClassAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	s := a newString: 'abc'.
 	cl := a newClass: s adding: 0.
 	m classAt: cl instanceSize: 11.
@@ -420,7 +413,7 @@ LObjectMemoryTest >> testIsBinaryAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	e := a gcAlloc: 5.
 	b := a binaryAlloc: 10.
 	c := a binaryAlloc: 20.
@@ -437,7 +430,7 @@ LObjectMemoryTest >> testIsSmallInteger [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 2048.
+	a allocateMemory: 2048.
 	100
 		timesRepeat: [ v := m newSmallInteger: (-10000 to: 10000) atRandom.
 			self assert: (m isSmallInteger: v) ].
@@ -452,7 +445,7 @@ LObjectMemoryTest >> testMarkBinaryObjectAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	m markBinaryObjectAt: 10.
 	self assert: (m isBinaryAt: 10).
 	self deny: (m isBinaryAt: 20)
@@ -464,7 +457,7 @@ LObjectMemoryTest >> testMarkGcDoneObjectAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 100.
+	a allocateMemory: 100.
 	m coreAt: 11 uint8: 20.
 	self assert: (m uint8CoreAt: 10) equals: 0.
 	m markGcDoneObjectAt: 9.
@@ -498,7 +491,7 @@ LObjectMemoryTest >> testNameOfClassAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	s := a newString: 'abc'.
 	cl := a newClass: s adding: 0.
 	self assert: (m nameOfClassAt: cl) equals: s
@@ -520,7 +513,7 @@ LObjectMemoryTest >> testObjectAtByteArray [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	m objectAt: 0 byteArray: #[99 98 97 96].
 	self assert: (m core byteAt: 1) equals: 0.
 	self assert: (m core byteAt: 2) equals: 0.
@@ -542,7 +535,7 @@ LObjectMemoryTest >> testObjectAtByteAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	m objectAt: 0 byteAt: 1 put: 10.
 	m objectAt: 0 byteAt: 2 put: 20.
 	m objectAt: 0 byteAt: 3 put: 30.
@@ -557,7 +550,7 @@ LObjectMemoryTest >> testObjectAtByteAtPut [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	m objectAt: 0 byteAt: 0 put: 10.
 	m objectAt: 0 byteAt: 1 put: 20.
 	m objectAt: 0 byteAt: 2 put: 30.
@@ -581,7 +574,7 @@ LObjectMemoryTest >> testObjectAtClass [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	m objectAt: 0 class: 258.
 	self assert: (m core byteAt: 1) equals: 0.
 	self assert: (m core byteAt: 2) equals: 0.
@@ -599,7 +592,7 @@ LObjectMemoryTest >> testObjectAtDataAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	m objectAt: 10 dataAt: 0 put: 258.
 	m objectAt: 30 dataAt: 1 put: 12345.
 	self assert: (m objectAt: 10 dataAt: 0) equals: 258.
@@ -612,7 +605,7 @@ LObjectMemoryTest >> testObjectAtDataAtPut [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	m objectAt: 0 dataAt: 0 put: 258.
 	m objectAt: 0 dataAt: 1 put: 261+256.
 	self assert: (m core byteAt: 1) equals: 0.
@@ -639,7 +632,7 @@ LObjectMemoryTest >> testObjectAtRawDataAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 100.
+	a allocateMemory: 100.
 	m objectAt: 0 class: 10.
 	m objectAt: 0 dataAt: 0 put: 20.
 	m objectAt: 0 dataAt: 1 put: 30.
@@ -654,7 +647,7 @@ LObjectMemoryTest >> testObjectAtRawDataAtPut [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 100.
+	a allocateMemory: 100.
 	m objectAt: 0 rawDataAt: 0 put: 10.
 	m objectAt: 0 rawDataAt: 1 put: 20.
 	m objectAt: 0 rawDataAt: 2 put: 30.
@@ -669,7 +662,7 @@ LObjectMemoryTest >> testObjectAtSize [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	m objectAt: 4 size: 65.
 	self assert: (m core byteAt: 1) equals: 0.
 	self assert: (m core byteAt: 2) equals: 0.
@@ -687,7 +680,7 @@ LObjectMemoryTest >> testObjectAtString [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	m objectAt: 0 string: 'abc'.
 	self assert: (m core byteAt: 1) equals: 0.
 	self assert: (m core byteAt: 2) equals: 0.
@@ -755,7 +748,7 @@ LObjectMemoryTest >> testSizeOfObjectAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	m objectAt: 123 size: 34567.
 	self assert: (m sizeOfObjectAt: 123) equals: 34567
 ]
@@ -787,7 +780,7 @@ LObjectMemoryTest >> testStringOfObjectAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	str := 'abcdefghi'.
 	addr := a binaryAlloc: str size.
 	m objectAt: addr string: str.
@@ -823,7 +816,7 @@ LObjectMemoryTest >> testUint32CoreAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	m core byteAt: 1 put: 2.
 	m core byteAt: 2 put: 1.
 	m coreAt: 1 uint32: 258.
@@ -843,7 +836,7 @@ LObjectMemoryTest >> testUint8CoreAt [
 	m := self newMemory.
 	a := self newAllocator.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	m coreAt: 10 uint8: 50.
 	m coreAt: 11 uint8: 10.
 	self assert: (m uint8CoreAt: 10) equals: 50.

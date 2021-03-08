@@ -14,11 +14,6 @@ Class {
 	#category : #'LSmalltalk-Tools'
 }
 
-{ #category : #api }
-LCopyingGC >> allocate: anInteger [
-	^ allocator simpleAllocate: anInteger
-]
-
 { #category : #'debug support' }
 LCopyingGC >> checkMemory [
 	| r |

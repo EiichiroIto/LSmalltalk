@@ -52,7 +52,7 @@ LDynamicAllocatorTest >> testIsInCurrentSpace [
 	| a m |
 	a := self newAllocator.
 	m := a memory.
-	a allocate: 10.
+	a allocateMemory: 10.
 	a memoryBase: 1.
 	self assert: (a isInCurrentSpace: 0).
 	self assert: (a isInCurrentSpace: 9).
@@ -72,7 +72,7 @@ LDynamicAllocatorTest >> testMemoryBase [
 LDynamicAllocatorTest >> testMemoryEnd [
 	| a |
 	a := self newAllocator.
-	a allocate: 1000.
+	a allocateMemory: 1000.
 	self assert: a memoryEnd equals: 1000.
 	a memoryEnd: 123.
 	self assert: a memoryEnd equals: 123

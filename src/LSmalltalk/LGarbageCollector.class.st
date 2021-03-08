@@ -9,6 +9,11 @@ Class {
 	#category : #'LSmalltalk-Tools'
 }
 
+{ #category : #api }
+LGarbageCollector >> allocate: anInteger [
+	^ allocator simpleAllocate: anInteger
+]
+
 { #category : #accessing }
 LGarbageCollector >> allocator [
 	^ allocator

@@ -25,6 +25,15 @@ LSourceGeneratorTest >> testBuilder [
 ]
 
 { #category : #test }
+LSourceGeneratorTest >> testClassClassName [
+	| g |
+	g := self newGenerator.
+	self assert: g classClassName isNil.
+	g classClassName: 'abc'.
+	self assert: g classClassName equals: 'abc'
+]
+
+{ #category : #test }
 LSourceGeneratorTest >> testGenerateAllClassesFrom [
 	| g s |
 	g := self newGenerator.
@@ -32,6 +41,7 @@ LSourceGeneratorTest >> testGenerateAllClassesFrom [
 		specials:
 			{LObject.
 			LClass} asSet.
+	g classClassName: 'LClass'.
 	g generateAllClassesFrom: LObject.
 	s := ReadStream on: g builder output.
 	self
@@ -288,6 +298,7 @@ LSourceGeneratorTest >> testGenerateClass [
 LSourceGeneratorTest >> testGenerateClassMetaClass [
 	| g b |
 	g := self newGenerator.
+	g classClassName: 'LClass'.
 	b := g builder.
 	g generateClass: LSymbol metaClass: LSymbol class.
 	g generateClass: LChar metaClass: LChar class.
@@ -425,6 +436,7 @@ LSourceGeneratorTest >> testGenerateObjectClass [
 	| g s |
 	g := self newGenerator.
 	g generateObject: LObject class: LClass.
+	self assert: g classClassName equals: 'LClass'.
 	s := ReadStream on: g builder output.
 	self
 		assert: s next

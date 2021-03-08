@@ -13,13 +13,13 @@ LMemoryAllocatorTest >> newMemory [
 ]
 
 { #category : #test }
-LMemoryAllocatorTest >> testAllocate [
+LMemoryAllocatorTest >> testAllocateMemory [
 	| a m |
 	m := self newMemory.
 	self assert: m core isNil.
 	a := LBuildingAllocator new.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	self assert: m core size equals: 1024
 ]
 
@@ -29,7 +29,7 @@ LMemoryAllocatorTest >> testBinaryAlloc [
 	m := self newMemory.
 	a := LBuildingAllocator new.
 	a memory: m.
-	a allocate: 1024.
+	a allocateMemory: 1024.
 	addr := a binaryAlloc: 3.
 	self assert: addr equals: 0.
 	self assert: (m core at: 1) equals: (3 << 2 bitOr: 2).

@@ -14,10 +14,11 @@ LImageBuilderTest >> newBuilder [
 	a := LBuildingAllocator new.
 	a
 		memory: m;
-		allocate: 1024.
+		allocateMemory: 1024.
 	^ LImageBuilder new
 		allocator: a;
 		memory: m;
+		classNames: LClassNames new;
 		yourself
 ]
 
@@ -59,7 +60,7 @@ LImageBuilderTest >> testAllInstanceVariablesOfClassAt [
 	b memory initialAllocate: 4096.
 	b bigBang.
 	b setup2.
-	b class: 'Test' superClass: b objectClassName variables: #(a b c).
+	b class: 'Test' superClass: b classNames objectClassName variables: #(a b c).
 	b class: 'Test2' superClass: 'Test' variables: #(d e).
 	b class: 'Test3' superClass: 'Test2' variables: #(f g h).
 	cl := e globalNamed: 'Test'.
@@ -98,35 +99,35 @@ LImageBuilderTest >> testBigBang [
 	self assert: (m stringOfObjectAt: c2) equals: 'LUndefined'.
 	c2 := m classOfObjectAt: e nilObject.
 	self assert: c2 equals: c1.
-	c1 := e globalNamed: b objectClassName.
-	c2 := e globalNamed: b metaObjectClassName.
+	c1 := e globalNamed: b classNames objectClassName.
+	c2 := e globalNamed: b classNames metaObjectClassName.
 	self assert: c1 > 0.
 	self assert: c2 > 0.
 	self assert: (m classOfObjectAt: c1) equals: c2.
 	self assert: (m parentClassOfClassAt: c1) equals: e nilObject.
-	c1 := e globalNamed: b classClassName.
-	c2 := e globalNamed: b metaClassClassName.
+	c1 := e globalNamed: b classNames classClassName.
+	c2 := e globalNamed: b classNames metaClassClassName.
 	self assert: c1 > 0.
 	self assert: c2 > 0.
 	self assert: (m classOfObjectAt: c1) equals: c2.
 	c1 := e globalNamed: b trueObjectName.
-	c2 := e globalNamed: b trueClassName.
+	c2 := e globalNamed: b classNames trueClassName.
 	self assert: c1 > 0.
 	self assert: c2 > 0.
 	self assert: (m classOfObjectAt: c1) equals: c2.
 	c1 := e globalNamed: b falseObjectName.
-	c2 := e globalNamed: b falseClassName.
+	c2 := e globalNamed: b classNames falseClassName.
 	self assert: c1 > 0.
 	self assert: c2 > 0.
 	self assert: (m classOfObjectAt: c1) equals: c2.
-	c1 := e globalNamed: b objectClassName.
+	c1 := e globalNamed: b classNames objectClassName.
 	c2 := m methodsOfClassAt: c1.
 	self
 		assert: (m classOfObjectAt: c2)
-		equals: (e globalNamed: b dictionaryClassName).
+		equals: (e globalNamed: b classNames dictionaryClassName).
 	c2 := m instanceSizeOfClassAt: c1.
 	self assert: c2 equals: 0.
-	c1 := e globalNamed: b classClassName.
+	c1 := e globalNamed: b classNames classClassName.
 	c2 := m instanceSizeOfClassAt: c1.
 	self assert: c2 equals: 0.
 	c1 := e globalNamed: b globalsObjectName.
@@ -142,7 +143,7 @@ LImageBuilderTest >> testClassInstanceMethod [
 	m initialAllocate: 4096.
 	b bigBang.
 	b setup2.
-	b class: 'Test' superClass: b objectClassName variables: #(a b).
+	b class: 'Test' superClass: b classNames objectClassName variables: #(a b).
 	b class: 'Test' instanceMethod: 'test1 ^ a + b'.
 	cl := e globalNamed: 'Test'.
 	dict := m methodsOfClassAt: cl.
@@ -199,6 +200,16 @@ LImageBuilderTest >> testClassIsInstanceOfAndSubClassOfWithVariables [
 	self assert: c2 equals: (e globalNamed: 'LClass').
 	c3 := m parentClassOfClassAt: c1.
 	self assert: c3 equals: (e globalNamed: 'MetaLObject')
+]
+
+{ #category : #test }
+LImageBuilderTest >> testClassNames [
+	| b c |
+	b := self newBuilder.
+	self assert: b classNames class equals: LClassNames.
+	c := LClassNames new.
+	b classNames: c.
+	self assert: b classNames identicalTo: c
 ]
 
 { #category : #test }
@@ -273,14 +284,14 @@ LImageBuilderTest >> testFinalizeBigBang [
 	b setupMetaClass.
 	b setupMiscClasses.
 	b finalizeBigBang.
-	c1 := e globalNamed: b objectClassName.
+	c1 := e globalNamed: b classNames objectClassName.
 	c2 := m methodsOfClassAt: c1.
 	self
 		assert: (m classOfObjectAt: c2)
-		equals: (e globalNamed: b dictionaryClassName).
+		equals: (e globalNamed: b classNames dictionaryClassName).
 	c2 := m instanceSizeOfClassAt: c1.
 	self assert: c2 equals: 0.
-	c1 := e globalNamed: b classClassName.
+	c1 := e globalNamed: b classNames classClassName.
 	c2 := m instanceSizeOfClassAt: c1.
 	self assert: c2 equals: 0.
 	c1 := e globalNamed: b globalsObjectName.
@@ -304,7 +315,7 @@ LImageBuilderTest >> testInstanceVariablesOfClassAt [
 	b memory initialAllocate: 4096.
 	b bigBang.
 	b setup2.
-	b class: 'Test' superClass: b objectClassName variables: #(a b c).
+	b class: 'Test' superClass: b classNames objectClassName variables: #(a b c).
 	b class: 'Test2' superClass: 'Test' variables: #(d e).
 	b class: 'Test3' superClass: 'Test2' variables: #(f g h).
 	cl := e globalNamed: 'Test'.
@@ -338,7 +349,7 @@ LImageBuilderTest >> testNewArray [
 	b setupMiscClasses.
 	r := b newArray: 5.
 	c := m classOfObjectAt: r.
-	self assert: c equals: (e globalNamed: b arrayClassName).
+	self assert: c equals: (e globalNamed: b classNames arrayClassName).
 	1 to: 5 do: [ :each | 
 		c := m objectAt: r dataAt: each - 1.
 		self assert: c equals: e nilObject ]
@@ -350,7 +361,7 @@ LImageBuilderTest >> testNewByteArray [
 	b := self newBuilder.
 	e := b env.
 	m := b memory.
-	e addGlobal: 999 named: b byteArrayClassName.
+	e addGlobal: 999 named: b classNames byteArrayClassName.
 	s1 := b newByteArray: #[10 11 12].
 	s2 := b newByteArray: #[99 88].
 	self assert: (m classOfObjectAt: s1) equals: 999.
@@ -413,15 +424,15 @@ LImageBuilderTest >> testNewDictionary [
 	b setupMiscClasses.
 	r := b newDictionary.
 	c := m classOfObjectAt: r.
-	self assert: c equals: (e globalNamed: b dictionaryClassName).
+	self assert: c equals: (e globalNamed: b classNames dictionaryClassName).
 	c := m objectAt: r dataAt: 0.
 	self
 		assert: (m classOfObjectAt: c)
-		equals: (e globalNamed: b orderedArrayClassName).
+		equals: (e globalNamed: b classNames orderedArrayClassName).
 	c := m objectAt: r dataAt: 1.
 	self
 		assert: (m classOfObjectAt: c)
-		equals: (e globalNamed: b arrayClassName)
+		equals: (e globalNamed: b classNames arrayClassName)
 ]
 
 { #category : #test }
@@ -486,10 +497,10 @@ LImageBuilderTest >> testNewMethod [
 	b setupObjectClass.
 	b setupMetaClass.
 	b setupMiscClasses.
-	b addClassNamed: b methodClassName.
+	b addClassNamed: b classNames methodClassName.
 	r := b newMethod.
 	c := m classOfObjectAt: r.
-	self assert: c equals: (e globalNamed: b methodClassName)
+	self assert: c equals: (e globalNamed: b classNames methodClassName)
 ]
 
 { #category : #test }
@@ -505,7 +516,7 @@ LImageBuilderTest >> testNewOrderedArray [
 	b setupMiscClasses.
 	r := b newOrderedArray.
 	c := m classOfObjectAt: r.
-	self assert: c equals: (e globalNamed: b orderedArrayClassName)
+	self assert: c equals: (e globalNamed: b classNames orderedArrayClassName)
 ]
 
 { #category : #test }
@@ -590,8 +601,8 @@ LImageBuilderTest >> testSetupMetaClass [
 	b setupNilObject.
 	b setupObjectClass.
 	b setupMetaClass.
-	c1 := e globalNamed: b classClassName.
-	c2 := e globalNamed: b metaClassClassName.
+	c1 := e globalNamed: b classNames classClassName.
+	c2 := e globalNamed: b classNames metaClassClassName.
 	self assert: c1 > 0.
 	self assert: c2 > 0.
 	self assert: (m classOfObjectAt: c1) equals: c2
@@ -608,12 +619,12 @@ LImageBuilderTest >> testSetupMiscClasses [
 	b setupMetaClass.
 	b setupMiscClasses.
 	c1 := e globalNamed: b trueObjectName.
-	c2 := e globalNamed: b trueClassName.
+	c2 := e globalNamed: b classNames trueClassName.
 	self assert: c1 > 0.
 	self assert: c2 > 0.
 	self assert: (m classOfObjectAt: c1) equals: c2.
 	c1 := e globalNamed: b falseObjectName.
-	c2 := e globalNamed: b falseClassName.
+	c2 := e globalNamed: b classNames falseClassName.
 	self assert: c1 > 0.
 	self assert: c2 > 0.
 	self assert: (m classOfObjectAt: c1) equals: c2
@@ -646,8 +657,8 @@ LImageBuilderTest >> testSetupObjectClass [
 	m := b memory.
 	b setupNilObject.
 	b setupObjectClass.
-	c := e globalNamed: b objectClassName.
-	mc := e globalNamed: b metaObjectClassName.
+	c := e globalNamed: b classNames objectClassName.
+	mc := e globalNamed: b classNames metaObjectClassName.
 	self assert: c > 0.
 	self assert: mc > 0.
 	self assert: (m classOfObjectAt: c) equals: mc.
