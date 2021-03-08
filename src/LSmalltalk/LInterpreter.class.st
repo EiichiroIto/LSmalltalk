@@ -1,8 +1,8 @@
 Class {
 	#name : #LInterpreter,
 	#superclass : #Object,
-	#traits : 'TLProcessSize + TLMethodSize + TLInstructions + TLNames + TLBlockSize + TLClassSize + TLReturnCode',
-	#classTraits : 'TLProcessSize classTrait + TLMethodSize classTrait + TLInstructions classTrait + TLNames classTrait + TLBlockSize classTrait + TLClassSize classTrait + TLReturnCode classTrait',
+	#traits : 'TLProcessSize + TLMethodSize + TLInstructions + TLBlockSize + TLClassSize + TLReturnCode',
+	#classTraits : 'TLProcessSize classTrait + TLMethodSize classTrait + TLInstructions classTrait + TLBlockSize classTrait + TLClassSize classTrait + TLReturnCode classTrait',
 	#instVars : [
 		'pc',
 		'memory',

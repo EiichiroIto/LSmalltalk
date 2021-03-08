@@ -1,6 +1,8 @@
 Class {
 	#name : #LSourceGenerator,
 	#superclass : #Object,
+	#traits : 'TLNames',
+	#classTraits : 'TLNames classTrait',
 	#instVars : [
 		'builder',
 		'specials',
@@ -72,11 +74,11 @@ LSourceGenerator >> generateClass: aClass [
 { #category : #private }
 LSourceGenerator >> generateClass: aClass metaClass: aMetaClass [
 	| metaName |
-	metaName := builder metaName , aClass name.
+	metaName := self metaName , aClass name.
 	builder
 		class: metaName
 		isInstanceOf: classClassName
-		andSubClassOf: builder metaName , aClass superclass name
+		andSubClassOf: self metaName , aClass superclass name
 		withVariables: aMetaClass instVarNames.
 	builder
 		class: aClass name
@@ -88,7 +90,7 @@ LSourceGenerator >> generateClass: aClass metaClass: aMetaClass [
 { #category : #private }
 LSourceGenerator >> generateClassMethod: aCompiledMethod inClass: aClass [
 	builder
-		class: builder metaName , aClass name
+		class: self metaName , aClass name
 		instanceMethod: aCompiledMethod sourceCode
 ]
 
@@ -112,18 +114,18 @@ LSourceGenerator >> generateObject: aClass class: aClass2 [
 	classClassName := aClass2 name.
 	builder
 		class: aClass2 name
-		isInstanceOf: builder metaName , aClass2 name
+		isInstanceOf: self metaName , aClass2 name
 		andSubClassOf: aClass name
 		withVariables: aClass2 instVarNames.
 	builder
-		class: builder metaName , aClass name
+		class: self metaName , aClass name
 		isInstanceOf: aClass2 name
 		andSubClassOf: aClass2 name
 		withVariables: aClass class instVarNames.
 	builder
-		class: builder metaName , aClass2 name
+		class: self metaName , aClass2 name
 		isInstanceOf: aClass2 name
-		andSubClassOf: builder metaName , aClass name
+		andSubClassOf: self metaName , aClass name
 		withVariables: aClass2 class instVarNames
 ]
 

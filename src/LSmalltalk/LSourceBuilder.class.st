@@ -1,8 +1,6 @@
 Class {
 	#name : #LSourceBuilder,
 	#superclass : #Object,
-	#traits : 'TLNames',
-	#classTraits : 'TLNames classTrait',
 	#instVars : [
 		'output'
 	],
