@@ -258,8 +258,6 @@ bulkReplace(struct object *dest, struct object *start,
 {
 	int irepStart, istart, istop, count;
 
-	printf("dest=%d,start=%d,stop=%d,src=%d,repStart=%d\n",
-	       dest, start, stop, src, repStart);
 	/*
 	 * We only handle simple 31-bit integer indices.  Map the
 	 * values onto 0-based C array type values.
@@ -380,8 +378,6 @@ execute(struct object *aProcess, int ticks)
             high = low;
             low = bp[bytePointer++] ;
         }
-
-	//printf("high=%d low=%d\n", high, low);
 
 	/* And dispatch */
         switch (high) {
@@ -847,8 +843,7 @@ checkCache:
 		    goto endPrimitive;
 
 	    case 9:		/* read char from input */
-	      printf("getchar()\n");
-	      low = getchar();
+		    low = getchar();
 		    if (low == EOF) {
 			    returnedValue = nilObject;
 		    } else {
