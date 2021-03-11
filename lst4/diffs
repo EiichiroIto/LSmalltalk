@@ -2,46 +2,6 @@ diff -c --recursive /home/itoh/Research/LittleSmalltalk/littlesmalltalk/lst4/sou
 *** /home/itoh/Research/LittleSmalltalk/littlesmalltalk/lst4/source/interp.c	2021-01-27 20:29:22.974673013 +0900
 --- ./source/interp.c	2021-03-07 21:16:27.070865549 +0900
 ***************
-*** 258,263 ****
---- 258,265 ----
-  {
-  	int irepStart, istart, istop, count;
-  
-+ 	printf("dest=%d,start=%d,stop=%d,src=%d,repStart=%d\n",
-+ 	       dest, start, stop, src, repStart);
-  	/*
-  	 * We only handle simple 31-bit integer indices.  Map the
-  	 * values onto 0-based C array type values.
-***************
-*** 379,384 ****
---- 381,388 ----
-              low = bp[bytePointer++] ;
-          }
-  
-+ 	//printf("high=%d low=%d\n", high, low);
-+ 
-  	/* And dispatch */
-          switch (high) {
-  
-***************
-*** 843,849 ****
-  		    goto endPrimitive;
-  
-  	    case 9:		/* read char from input */
-! 		    low = getchar();
-  		    if (low == EOF) {
-  			    returnedValue = nilObject;
-  		    } else {
---- 847,854 ----
-  		    goto endPrimitive;
-  
-  	    case 9:		/* read char from input */
-! 	      printf("getchar()\n");
-! 	      low = getchar();
-  		    if (low == EOF) {
-  			    returnedValue = nilObject;
-  		    } else {
-***************
 *** 1090,1102 ****
   		break;
   
