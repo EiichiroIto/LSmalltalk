@@ -2,8 +2,8 @@
 Little Smalltalk Implementation by Pharo Smalltalk.
 
 It can
-- read and imageSource of Lst4
-- generate image, of course, with compiling
+- read imageSource of Lst4
+- generate image with compiling source
 - write image file compatible with Lst4
 - execute bytecodes of Lst4
 
